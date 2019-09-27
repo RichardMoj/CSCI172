@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1569435196 source:/home/richard/Desktop/CSCI172/fern/main.cpp
+	<string.h>
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<math.h>
+
