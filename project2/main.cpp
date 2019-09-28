@@ -32,11 +32,11 @@ const GLfloat high_shininess[] = { 100.0f };
 /** All variables initialized during init() function **/
 
 //Flag vars for deciding whether one of the glut solid objects is selected
-bool c_flag, t_flag, s_flag;
+bool c_flag, t_flag, s_flag, r_flag;
 
 //vars for the rotation and position of the GLUT objects
-int deg;
-float pos;
+int angleS, angleC, angleT;
+float posS, posC, posT;
 
 //vars for the initial pos of the objects
 float sphereX, sphereY, sphereZ, cubeX, cubeY, cubeZ, tpotX, tpotY, tpotZ;
@@ -82,46 +82,28 @@ static void display(void)
     //Push sphere onto the window, blue color
     glPushMatrix();
     glColor3f(0, 0, 1);
-    glTranslatef(sphereX, sphereY, sphereZ);
+    glRotatef(angleS, 0, 1, 0 );
+    glTranslatef(sphereX, sphereY, sphereZ+posS);
     glutSolidSphere(sphere_radius, 100, 100);
     glPopMatrix();
 
     //Push cube onto the window, green color
     glPushMatrix();
     glColor3f(0, 1, 0);
-    glTranslatef(cubeX, cubeY, cubeZ);
+    glRotatef(angleC, 0, 1, 0);
+    glTranslatef(cubeX, cubeY, cubeZ + posC);
     glutSolidCube(cube_size);
     glPopMatrix();
 
     //Push teapot onto the window, red color
     glPushMatrix();
     glColor3f(1,0,0);
-    glTranslatef(tpotX, tpotY, tpotZ);
+    //glTranslatef(tpotX, tpotY, tpotZ+posT);
+
+    glRotatef(angleT, 0, 1, 0);
+    glTranslatef(tpotX, tpotY, tpotZ+posT);
     glutSolidTeapot(teapot_size);
     glPopMatrix();
-
-    //Modify glut solid objects when callback() is initiated
-    //And if flags are switched on
-    if (c_flag)
-    {
-    glPushMatrix();
-    //do stuff?
-    glPopMatrix();
-    }
-
-    if (s_flag)
-    {
-    glPushMatrix();
-    //do stuff?
-    glPopMatrix();
-    }
-
-    if (t_flag)
-    {
-    glPushMatrix();
-    //do stuff?
-    glPopMatrix();
-    }
 
 
     glutSwapBuffers();
@@ -135,22 +117,33 @@ static void key(unsigned char key, int x, int y)
         case 'q':
             exit(0);
             break;
-        // If a user presses a key once, turn the flag on
-        // If they press it a second time, turn the flag off, repeat
+        // If a user presses a key once, turn the flag on for
+        // That specific key flag, turn off other flags
         case 'c':
-            //If c_flag is true, then turn off selection on circle
-            if (c_flag) c_flag = false;
-
-            //If c_flag is false, then turn on selection on circle
-            if (!c_flag) c_flag = true;
+            c_flag = true;
+            t_flag = false;
+            s_flag = false;
             break;
         case 't':
-            if (t_flag) t_flag = false;
-            if (!t_flag) t_flag = true;
+            t_flag = true;
+            c_flag = false;
+            s_flag = false;
             break;
         case 's':
-            if (s_flag) s_flag = false;
-            if (!s_flag) s_flag = true;
+            s_flag = true;
+            c_flag = false;
+            t_flag = false;
+            break;
+        //Reset all flags back to false. Deselecting all objects
+        case 'r':
+            s_flag = false;
+            c_flag = false;
+            t_flag = false;
+            break;
+        case 'k':
+            r_flag = true;
+            break;
+        default:
             break;
     }
 
@@ -160,23 +153,54 @@ void Specialkeys(int key, int x, int y)
 {
     switch(key)
     {
-    //KEY_UP & KEY_DOWN controls position
+    //KEY_UP & KEY_DOWN controls position, only when a flag is set to true
         case GLUT_KEY_UP:
-            pos += 0.5;
+            if(s_flag) posS += 0.5;
+            if(c_flag) posC += 0.5;
+            if(t_flag) posT += 0.5;
+            //If r_flag is on, pos and rot back to init values for all obj
+            if(r_flag)
+            {
+                posC = posT = posS = angleS = angleC = angleT = 0;
+                r_flag = false;
+            }
             break;
         case GLUT_KEY_DOWN:
-            pos -= 0.5;
+            if(s_flag) posS -= 0.5;
+            if(c_flag) posC -= 0.5;
+            if(t_flag) posT -= 0.5;
+            if(r_flag)
+            {
+                posC = posT = posS = angleS = angleC = angleT = 0;
+                r_flag = false;
+            }
             break;
-    //KEY LEFT & RIGHT controls rotation around y-axis
+    //KEY LEFT & RIGHT controls rotation around y-axis only when a flag is set to true
         case GLUT_KEY_LEFT:
-            deg += 5;
+            if(s_flag) angleS += 5;
+            if(c_flag) angleC += 5;
+            if(t_flag) angleT += 5;
+            if(r_flag)
+            {
+                posC = posT = posS = angleS = angleC = angleT = 0;
+                r_flag = false;
+            }
             break;
         case GLUT_KEY_RIGHT:
-            deg -= 5;
+            if(s_flag) angleS -= 5;
+            if(c_flag) angleC -= 5;
+            if(t_flag) angleT -= 5;
+            if(r_flag)
+            {
+                posC = posT = posS = angleS = angleC = angleT = 0;
+                r_flag = false;
+            }
+            break;
+        default:
             break;
 
    }
-  glutPostRedisplay();
+  glutPostRedisplay(); //Tells window to redraw the screen?
 }
 
 static void idle(void)
@@ -216,11 +240,12 @@ static void init(void)
     cubeX = 4.0;
     cubeZ = -2.0;
     tpotZ = -3.0;
-    sphereY, cubeY, tpotX, tpotY = 0.0;
-    c_flag, t_flag, s_flag = false;
 
-    deg = 0 % 360;
-    pos = 0;
+    sphereY = cubeY = tpotX = tpotY = 0.0;
+    c_flag = t_flag = s_flag = r_flag = false;
+
+    angleS = angleC = angleT = 0 % 360;
+    posS = posC = posT = 0;
 
     sphere_radius = 1.3;
     teapot_size = 1.5;
@@ -250,3 +275,4 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
+
