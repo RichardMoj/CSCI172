@@ -82,26 +82,24 @@ static void display(void)
     //Push sphere onto the window, blue color
     glPushMatrix();
     glColor3f(0, 0, 1);
-    glRotatef(angleS, 0, 1, 0 );
     glTranslatef(sphereX, sphereY, sphereZ+posS);
-    glutSolidSphere(sphere_radius, 100, 100);
+    glRotatef(angleS, 0, 1, 0 );
+    glutSolidSphere(sphere_radius, 100, 10);       //sphere works
     glPopMatrix();
 
     //Push cube onto the window, green color
     glPushMatrix();
     glColor3f(0, 1, 0);
-    glRotatef(angleC, 0, 1, 0);
     glTranslatef(cubeX, cubeY, cubeZ + posC);
+    glRotatef(angleC, 0, 1, 0);
     glutSolidCube(cube_size);
     glPopMatrix();
 
     //Push teapot onto the window, red color
     glPushMatrix();
     glColor3f(1,0,0);
-    //glTranslatef(tpotX, tpotY, tpotZ+posT);
-
-    glRotatef(angleT, 0, 1, 0);
     glTranslatef(tpotX, tpotY, tpotZ+posT);
+    glRotatef(angleT, 0, 1, 0);
     glutSolidTeapot(teapot_size);
     glPopMatrix();
 
@@ -134,13 +132,14 @@ static void key(unsigned char key, int x, int y)
             c_flag = false;
             t_flag = false;
             break;
-        //Reset all flags back to false. Deselecting all objects
-        case 'r':
+        //Deselecting all objects, leave them at their position
+        case 'd':
             s_flag = false;
             c_flag = false;
             t_flag = false;
             break;
-        case 'k':
+        //Reset the position & rotaton of all objects
+        case 'r':
             r_flag = true;
             break;
         default:

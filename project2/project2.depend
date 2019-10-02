@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1569630133 source:/home/richard/Documents/Repos/CSCI172/project2/main.cpp
+1570047464 source:/home/richard/Documents/Repos/CSCI172/project2/main.cpp
 	<string.h>
 	<GLUT/glut.h>
 	<GL/glut.h>
